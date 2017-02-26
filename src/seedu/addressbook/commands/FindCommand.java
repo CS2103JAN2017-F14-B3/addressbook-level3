@@ -43,14 +43,38 @@ public class FindCommand extends Command {
      * @return list of persons found
      */
     private List<ReadOnlyPerson> getPersonsWithNameContainingAnyKeyword(Set<String> keywords) {
-        final List<ReadOnlyPerson> matchedPersons = new ArrayList<>();
+        final Set<ReadOnlyPerson> matchedPersons = new HashSet<ReadOnlyPerson>();
         for (ReadOnlyPerson person : addressBook.getAllPersons()) {
             final Set<String> wordsInName = new HashSet<>(person.getName().getWordsInName());
-            if (!Collections.disjoint(lowerCased(wordsInName), lowerCased(keywords))) {
-                matchedPersons.add(person);
+            
+            final Set<String> phone = new HashSet<>(Arrays.asList(person.getPhone().toString()));
+            final Set<String> email = new HashSet<>(Arrays.asList(person.getEmail().toString()));
+            final Set<String> wordsInAddress = new HashSet<>(person.getAddress().getWordsInAddress());
+            for (String keyword : lowerCased(keywords)) {
+            	for (String word : lowerCased(wordsInName)) {
+            		if (word.contains(keyword)){
+            			matchedPersons.add(person);
+            		}
+            	}
+            	for (String number : lowerCased(phone)) {
+            		if (number.contains(keyword)){
+            			matchedPersons.add(person);
+            		}
+            	}
+            	for (String mail : lowerCased(email)) {
+            		if (mail.contains(keyword)){
+            			matchedPersons.add(person);	
+            		}
+            	}
+            	for (String word : lowerCased(wordsInAddress)) {
+            		if (word.contains(keyword)){
+            			matchedPersons.add(person);
+            		}
+
+            	}
             }
         }
-        return matchedPersons;
+        return new ArrayList<ReadOnlyPerson>(matchedPersons);
     }
     
     /**
