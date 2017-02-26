@@ -13,7 +13,7 @@ public class FindCommand extends Command {
     public static final String COMMAND_WORD = "find";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ":\n" + "Finds all persons whose names contain any of "
-            + "the specified keywords (case-sensitive) and displays them as a list with index numbers.\n\t"
+            + "the specified keywords and displays them as a list with index numbers.\n\t"
             + "Parameters: KEYWORD [MORE_KEYWORDS]...\n\t"
             + "Example: " + COMMAND_WORD + " alice bob charlie";
 
@@ -37,7 +37,7 @@ public class FindCommand extends Command {
     }
 
     /**
-     * Retrieve all persons in the address book whose names contain some of the specified keywords.
+     * Retrieve all persons in the address book whose names contain some of the specified keywords, not case-sensitive.
      *
      * @param keywords for searching
      * @return list of persons found
@@ -46,11 +46,24 @@ public class FindCommand extends Command {
         final List<ReadOnlyPerson> matchedPersons = new ArrayList<>();
         for (ReadOnlyPerson person : addressBook.getAllPersons()) {
             final Set<String> wordsInName = new HashSet<>(person.getName().getWordsInName());
-            if (!Collections.disjoint(wordsInName, keywords)) {
+            if (!Collections.disjoint(lowerCased(wordsInName), lowerCased(keywords))) {
                 matchedPersons.add(person);
             }
         }
         return matchedPersons;
     }
-
+    
+    /**
+     * Convert a given set of words to lower-cased.
+     *
+     * @param words to convert
+     * @return list of lower-cased words
+     */
+    private static List<String> lowerCased(Set<String> words) {
+    	final List<String> wordsInLowerCase = new ArrayList<>();
+    	for (String word : words) {
+    		wordsInLowerCase.add(word.toLowerCase());
+    	}
+    	return wordsInLowerCase;
+    }	
 }
